@@ -1,0 +1,55 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+// A game client for the automated test: gradle runTwp -PtwpDir=... -PtwpUser=Alice -PtwpAuto=create:Bob
+// (the -Dtwp.* switches are only honoured in this development environment, never in the installed mod)
+loom {
+    runs {
+        twp {
+            client()
+            runDir(project.hasProperty('twpDir') ? project.property('twpDir').toString() : 'run-test')
+            programArgs '--username', (project.hasProperty('twpUser') ? project.property('twpUser').toString() : 'Tester')
+            vmArg '-Dtwp.offline=true'
+            ['Auto': 'auto', 'Lan': 'lanPort', 'Sync': 'syncSeconds', 'Kill': 'kill', 'Exit': 'exitFile'].each { key, prop ->
+                if (project.hasProperty('twp' + key)) vmArg "-Dtwp.${prop}=" + project.property('twp' + key)
+            }
+        }
+    }
+}
+
+// Each Minecraft version names a few things differently. Those few calls live in src/compat/<version>/.
+sourceSets {
+    main {
+        java {
+            srcDir "src/compat/${project.compat}/java"
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+processResources {
+    def version = project.version
+    def minecraftDep = project.minecraft_dep
+    inputs.property "version", version
+    inputs.property "minecraft_dep", minecraftDep
+    filesMatching("fabric.mod.json") {
+        expand "version": version, "minecraft_dep": minecraftDep
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 25
+}

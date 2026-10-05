@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "twoweekphase",
+  "version": "${version}",
+  "name": "Two Week Phase",
+  "description": "One hardcore world shared by two players. It is saved inside the mods folder instead of your saves, only the two owners can enter, whoever dies stays as a ghost, and each owner's game keeps its own copy so neither can take it from the other. Works with Essential or on its own.",
+  "authors": [
+    "husein"
+  ],
+  "license": "MIT",
+  "icon": "assets/twoweekphase/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.husein.twp.TwoWeekPhaseMod"
+    ],
+    "client": [
+      "net.husein.twp.client.TwoWeekPhaseClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "${minecraft_dep}",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
